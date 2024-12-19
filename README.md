@@ -10,7 +10,7 @@ In this repository you will find:
 This repository has been temporarily made public to allow for peer review of the associated research. The code, data, and other materials contained in this repository are proprietary and remain the intellectual property of the authors from LABEL.
 
 ### Restrictions on Use
-- Unauthorized use, modification, or distribution of this code is strictly prohibited.
+- Unauthorized use, modification, or distribution of the software is strictly prohibited.
 - This repository is intended solely for review purposes and cannot be reused or repurposed without explicit written permission from the author.
 
 ### Duration of Public Access
