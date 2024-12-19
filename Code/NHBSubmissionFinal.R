@@ -1,5 +1,5 @@
 # set working directory. 
-setwd(" INCLUDE YOUR PATH  ")
+setwd("/Users/ulyri/Dropbox/05-Networks small kids/Python/0-data")
 
 library(tidyr)
 library(trend)
@@ -210,7 +210,7 @@ update_network_colorsA <- function(g, p) {
 # Perform a single simulation
 
 # Function to perform a single simulation and return convergence time
-perform_simulation <- function(p) {
+perform_simulation <- function(p,x) {
   n <- 6  # Number of nodes
   colorvector
   
@@ -218,12 +218,12 @@ perform_simulation <- function(p) {
     if(l==2){
       g <- create_custom_graph_2(n)
       V(g)$color <- sample("white", n, replace = TRUE) #v(g)$colors does not work in function without colors being set
-      g <- initialize_network_colorsAs(g)
+      g <- initialize_network_colorsAs(g,x)
     }
     if(l==3){
       g <- create_custom_graph_3(n)
       V(g)$color <- sample("white", n, replace = TRUE) #v(g)$colors does not work in function without colors being set
-      g <- initialize_network_colorsAs(g)
+      g <- initialize_network_colorsAs(g,x)
     }}
   else{
     if(l==2){
@@ -264,7 +264,7 @@ num_simulations <- 1000 # number simulations
 
 # Run simulations and collect results
 
-convergence_times <- replicate(num_simulations, perform_simulation(p))
+convergence_times <- replicate(num_simulations, perform_simulation(p,x))
 convergence_df <- data.frame(
   ConvergenceTime = convergence_times,
   Converged = !is.na(convergence_times)
@@ -273,7 +273,7 @@ C2N2AL <- nrow(subset(convergence_df, !is.na(ConvergenceTime)))
 c1<-c("yes","AL",C2N2AL/num_simulations,NA, "C2N2") 
 
 colorvector<-c("red","blue", "yellow", "brown")
-convergence_times <- replicate(num_simulations, perform_simulation(p))
+convergence_times <- replicate(num_simulations, perform_simulation(p,x))
 convergence_df <- data.frame(
   ConvergenceTime = convergence_times,
   Converged = !is.na(convergence_times)
@@ -283,7 +283,7 @@ c2<-c("yes","AL",C4N2AL/num_simulations,NA, "C4N2")
 
 colorvector<-c("red","blue")
 l <- 3
-convergence_times <- replicate(num_simulations, perform_simulation(p))
+convergence_times <- replicate(num_simulations, perform_simulation(p,x))
 convergence_df <- data.frame(
   ConvergenceTime = convergence_times,
   Converged = !is.na(convergence_times)
@@ -292,7 +292,7 @@ C2N3AL <- nrow(subset(convergence_df, !is.na(ConvergenceTime)))
 c3<-c("yes","AL",C2N3AL/num_simulations,NA, "C2N3") 
 
 colorvector<-c("red","blue", "yellow", "brown")
-convergence_times <- replicate(num_simulations, perform_simulation(p))
+convergence_times <- replicate(num_simulations, perform_simulation(p,x))
 convergence_df <- data.frame(
   ConvergenceTime = convergence_times,
   Converged = !is.na(convergence_times)
@@ -358,7 +358,7 @@ colorvector<-c("red","blue", "yellow", "brown")
 disabled <- 8 
 
 #C4L2
-convergence_times <- replicate(1000, perform_simulation(p))
+convergence_times <- replicate(1000, perform_simulation(p,x))
 convergence_timesC4N2 <- na.omit(convergence_times) +6 
 
 # Prepare data for plotting
@@ -377,7 +377,7 @@ tableC4L2$sum <- sum(subset(tableC4L2, Var1 == "yes")$Freq)
 #Change for C4L3
 l <- 3
 
-convergence_times <- replicate(1000, perform_simulation(p))
+convergence_times <- replicate(1000, perform_simulation(p,x))
 convergence_timesC4N3 <- na.omit(convergence_times) +6 
 # Prepare data for plotting
 convergence_df <- data.frame(
@@ -396,7 +396,7 @@ tableC4L3$sum <- sum(subset(tableC4L3, Var1 == "yes")$Freq)
 
 colorvector<-c("red","blue")
 
-convergence_times <- replicate(1000, perform_simulation(p))
+convergence_times <- replicate(1000, perform_simulation(p,x))
 convergence_timesC2N3 <- na.omit(convergence_times) +6 
 # Prepare data for plotting
 convergence_df <- data.frame(
@@ -414,7 +414,7 @@ tableC2L3$sum <- sum(subset(tableC2L3, Var1 == "yes")$Freq)
 #Change for C2L2
 l<- 2
 
-convergence_times <- replicate(1000, perform_simulation(p))
+convergence_times <- replicate(1000, perform_simulation(p,x))
 convergence_df <- data.frame(
   Converged = !is.na(convergence_times),
   ConvergenceTime = convergence_times
@@ -489,13 +489,13 @@ plot
 
 #CODE TO GENERATE FIGURE 4-------------------------------------------------------------------------------------------------
 
-data<-read.table(paste(getwd(),"/Python/0-data/Probabilities.csv", sep = ''),header=TRUE,sep=",")
+data<-read.table(paste(getwd(),"/Probabilities.csv", sep = ''),header=TRUE,sep=",")
 
 
 # Age, gender, grade information
 
 
-dataI<-read.table(paste(getwd(),"/Python/0-data/dataNetworksIndiv.csv", sep = ''),header=TRUE,sep=",")
+dataI<-read.table(paste(getwd(),"/dataNetworksIndiv.csv", sep = ''),header=TRUE,sep=",")
 dataI<-subset(dataI,RoundCode>1)
 dataI<-subset(dataI,SizeNetwork!=4)
 
@@ -516,14 +516,14 @@ dataI$Age<-(2023-dataI$BirthYear)*12+5+dataI$MoB
 
 dataKeep<-subset(dataI, RoundCode==2)
 dataKeep<-dataKeep[c("ParticipantID","SessionCode","Grade","Age","Gender")]
-datagroup<-read.table(paste(getwd(),"/Python/0-data/dataNetworks.csv", sep =''),header=TRUE,sep=",")
+datagroup<-read.table(paste(getwd(),"/dataNetworks.csv", sep =''),header=TRUE,sep=",")
 
 
 data<-merge(data,dataKeep, by=c("ParticipantID","SessionCode"))
 data$Grade[data$Grade == '0'] <- 'K'
 data$Grade <- factor(data$Grade, levels = c("K", "1", "2"))
 
-avdata<-read.table(paste(getwd(),"/Python/0-data/AverageActionsIndiv.csv", sep = ''),header=TRUE,sep=",")
+avdata<-read.table(paste(getwd(),"/AverageActionsIndiv.csv", sep = ''),header=TRUE,sep=",")
 avdata$leader <- ifelse(avdata$Rank < 3, 1, 0)
 avdata2<-avdata[c("ParticipantID", "Rank","ExtraClicks", "NumberChoices")]
 data<-merge(data,avdata2, by=c("ParticipantID"))
@@ -562,15 +562,15 @@ print(plot)
 #CODE TO GENERATE FIGURE 5 -> USES ALGORITHM FROM FIGURE 2 & DATAFRAME FROM FIGURE 4 IN LINE BELOW----------------------------------------------
 vertical_p <- mean(data$Probability)
 
-dataI<-read.table(paste(getwd(),"/Python/0-data/dataNetworksIndiv.csv", sep = ''),header=TRUE,sep=",")
+dataI<-read.table(paste(getwd(),"/dataNetworksIndiv.csv", sep = ''),header=TRUE,sep=",")
 dataI<-subset(dataI,RoundCode>1)
 dataI<-subset(dataI,SizeNetwork!=4)
 
 
-dataAI<-read.table(paste(getwd(),"/Python/0-data/ActionsIndiv.csv", sep =''),header=TRUE,sep=",")
+dataAI<-read.table(paste(getwd(),"/ActionsIndiv.csv", sep =''),header=TRUE,sep=",")
 dataI<-merge(dataI,dataAI, by=c("SessionCode","ParticipantID","RoundCode"))
 
-avdata<-read.table(paste(getwd(),"/Python/0-data/AverageActionsIndiv.csv", sep = ''),header=TRUE,sep=",")
+avdata<-read.table(paste(getwd(),"/AverageActionsIndiv.csv", sep = ''),header=TRUE,sep=",")
 
 dataI$MoB[dataI$BirthMonth==1]<-12
 dataI$MoB[dataI$BirthMonth==2]<-11
@@ -625,55 +625,12 @@ datatest<-subset(dataI,RoundCode==2)[c("SessionCode","ParticipantID","Grade","Ge
 
 avdata<-merge(avdata,datatest,by=c("SessionCode","ParticipantID"))
 
-perform_simulation <- function(p,l) {
-  n <- 6  # Number of nodes
-  colorvector
-  
-  if( s != "A") { #if using sequential strategy initialize graph through this method
-    if(l==2){
-      g <- create_custom_graph_2(n)
-      V(g)$color <- sample("white", n, replace = TRUE) #v(g)$colors does not work in function without colors being set
-      g <- initialize_network_colorsAs(g)
-    }
-    if(l==3){
-      g <- create_custom_graph_3(n)
-      V(g)$color <- sample("white", n, replace = TRUE) #v(g)$colors does not work in function without colors being set
-      g <- initialize_network_colorsAs(g)
-    }}
-  else{
-    if(l==2){
-      g <- create_custom_graph_2(n)
-      V(g)$color <- sample(colorvector, n, replace = TRUE)
-    }else{
-      
-      if (l==3) {g <- create_custom_graph_3(n)
-      V(g)$color <- sample(colorvector, n, replace = TRUE)
-      }else{g <- create_custom_graph_4(n)
-      V(g)$color <- sample(colorvector, n, replace = TRUE)}
-    } }
-  for (i in 1:30) {
-    if (i == 1) {
-      if (length(unique(V(g)$color)) == 1) {
-        return(0) # return 0 in the case where everyone chose the same color through random chance
-      }
-    }
-    if (s=="A") {g <- update_network_colorsA(g, p)}
-    else {g <- update_network_colorsA(g, p)}
-    
-    # Check for convergence
-    if (length(unique(V(g)$color)) == 1) {
-      return(i)  # Return the iteration at which convergence occurred
-    }
-  }
-  return(NA)  # Return NA if no convergence within 30 iterations
-}
-
 # Function to run multiple simulations across different p values
-run_simulations <- function(l) {
+run_simulations <- function() {
   results <- data.frame(p = numeric(), AverageTime = numeric(), ConvergenceLikelihood = numeric())
   
   for (p in seq(0.5, 1, by = 0.02)) {
-    convergence_times <- replicate(num_simulations, perform_simulation(p,l))
+    convergence_times <- replicate(num_simulations, perform_simulation(p,x))
     converged <- !is.na(convergence_times)
     average_time <- mean(convergence_times[converged], na.rm = TRUE)
     likelihood_of_convergence <- mean(converged)
@@ -689,23 +646,23 @@ l <- 2    # Number of links
 s <- "A"
 colorvector<-c("red","blue") #,"yellow", "brown")
 disabled <- 8 # create the global variable to disable colors in previous rounds; initially not 1-6
-num_simulations <- 3000 # number simulations
+num_simulations <- 150 # number simulations
 
 # Running simulations for C2N2
-simulation_resultsC2N2 <- run_simulations(l)
+simulation_resultsC2N2 <- run_simulations()
 
 # Running Simulations for C4N2
 colorvector<-c("red","blue","yellow", "brown")
-simulation_resultsC4N2 <- run_simulations(l)
+simulation_resultsC4N2 <- run_simulations()
 
 # Running Simulations for C2N3
 colorvector<-c("red","blue") #,"yellow", "brown")
 l <- 3
-simulation_resultsC2N3 <- run_simulations(l)
+simulation_resultsC2N3 <- run_simulations()
 
 # Running Simulations for C4N3
 colorvector<-c("red","blue","yellow", "brown")
-simulation_resultsC4N3 <- run_simulations(l)
+simulation_resultsC4N3 <- run_simulations()
 
 #Graphs
 #Combine the 4 dataframes to get the whole picture
@@ -780,15 +737,15 @@ plot
 #CODE FOR FIGURE 6-----------------------------------------------------------------------------------------------------
 
 
-dataI<-read.table(paste(getwd(),"/Python/0-data/dataNetworksIndiv.csv", sep = ''),header=TRUE,sep=",")
+dataI<-read.table(paste(getwd(),"/dataNetworksIndiv.csv", sep = ''),header=TRUE,sep=",")
 dataI<-subset(dataI,RoundCode>1)
 #test<-subset(dataI,SizeNetwork==4)
 dataI<-subset(dataI,SizeNetwork!=4)
 
 
-dataAI<-read.table(paste(getwd(),"/Python/0-data/ActionsIndiv.csv", sep =''),header=TRUE,sep=",")
+dataAI<-read.table(paste(getwd(),"/ActionsIndiv.csv", sep =''),header=TRUE,sep=",")
 dataI<-merge(dataI,dataAI, by=c("SessionCode","ParticipantID","RoundCode"))
-avdata<-read.table(paste(getwd(),"/Python/0-data/AverageActionsIndiv.csv", sep = ''),header=TRUE,sep=",")
+avdata<-read.table(paste(getwd(),"/AverageActionsIndiv.csv", sep = ''),header=TRUE,sep=",")
 
 
 dataI$MoB[dataI$BirthMonth==1]<-12
@@ -1038,62 +995,12 @@ initialize_network_colorsAs <- function(g, x) {
 }
 
 
-# Function to perform a single simulation and return convergence time
-perform_simulation <- function(p,l,x) {
-  p<- vertical_p
-  if (p != vertical_p) {
-    break
-  }
-  n <- 6  # Number of nodes
-  colorvector
-  
-  if( s != "A") { #if using sequential strategy initialize graph through this method
-    if(l==2){
-      g <- create_custom_graph_2(n)
-      V(g)$color <- sample("white", n, replace = TRUE) #v(g)$colors does not work in function without colors being set
-      g <- initialize_network_colorsAs(g, x)
-    }
-    if(l==3){
-      g <- create_custom_graph_3(n)
-      V(g)$color <- sample("white", n, replace = TRUE) #v(g)$colors does not work in function without colors being set
-      g <- initialize_network_colorsAs(g, x)
-    }}
-  else{
-    if(l==2){
-      g <- create_custom_graph_2(n)
-      V(g)$color <- sample(colorvector, n, replace = TRUE)
-    }else{
-      
-      if (l==3) {g <- create_custom_graph_3(n)
-      V(g)$color <- sample(colorvector, n, replace = TRUE)
-      }else{g <- create_custom_graph_4(n)
-      V(g)$color <- sample(colorvector, n, replace = TRUE)}
-    } }
-  for (i in 1:30) {
-    if (i == 1) {
-      if (length(unique(V(g)$color)) == 1) {
-        return(0) # return 0 in the case where everyone chose the same color through random chance
-      }
-    }
-    if (s=="A") {g <- update_network_colorsA(g, p)}
-    else {g <- update_network_colorsA(g, p)}
-    
-    # Check for convergence
-    if (length(unique(V(g)$color)) == 1) {
-      return(i)  # Return the iteration at which convergence occurred
-    }
-  }
-  return(NA)  # Return NA if no convergence within 30 iterations
-}
-
-
-rm(x)
 # Function to run multiple simulations across different q values
 run_simulations <- function(p) {
   results <- data.frame(x = numeric(), AverageTime = numeric(), ConvergenceLikelihood = numeric())
   
   for (x in seq(0, 1, by = .1)) {
-    convergence_times <- replicate(num_simulations, perform_simulation(p,l,x))
+    convergence_times <- replicate(num_simulations, perform_simulation(p,x))
     converged <- !is.na(convergence_times)
     average_time <- mean(convergence_times[converged], na.rm = TRUE)
     likelihood_of_convergence <- mean(converged)
@@ -1110,23 +1017,23 @@ l <- 2    # Number of links
 s <- "As"
 colorvector<-c("red","blue") #,"yellow", "brown")
 disabled <- 8 # create the global variable to disable colors in previous rounds; initially not 1-6
-num_simulations <- 3000 # number simulations
+num_simulations <- 150 # number simulations
 
 # Running simulations for C2N2
-simulation_resultsC2N2 <- run_simulations(l)
+simulation_resultsC2N2 <- run_simulations(p)
 
 # Running Simulations for C4N2
 colorvector<-c("red","blue","yellow", "brown")
-simulation_resultsC4N2 <- run_simulations(l)
+simulation_resultsC4N2 <- run_simulations(p)
 
 # Running Simulations for C2N3
 colorvector<-c("red","blue") #,"yellow", "brown")
 l <- 3
-simulation_resultsC2N3 <- run_simulations(l)
+simulation_resultsC2N3 <- run_simulations(p)
 
 # Running Simulations for C4N3
 colorvector<-c("red","blue","yellow", "brown")
-simulation_resultsC4N3 <- run_simulations(l)
+simulation_resultsC4N3 <- run_simulations(p)
 
 #Graphs
 #Combine the 4 dataframes to get the whole picture
@@ -1203,53 +1110,9 @@ disabled <- 8 # create the global variable to disable colors in previous rounds;
 
 num_simulations <- 1000 # number simulations
 x<-1
-perform_simulation <- function(p) {
-  n <- 6  # Number of nodes
-  colorvector
-  
-  if( s != "A") { #if using sequential strategy initialize graph through this method
-    if(l==2){
-      g <- create_custom_graph_2(n)
-      V(g)$color <- sample("white", n, replace = TRUE) #v(g)$colors does not work in function without colors being set
-      g <- initialize_network_colorsAs(g,x)
-    }
-    if(l==3){
-      g <- create_custom_graph_3(n)
-      V(g)$color <- sample("white", n, replace = TRUE) #v(g)$colors does not work in function without colors being set
-      g <- initialize_network_colorsAs(g,x)
-    }}
-  else{
-    if(l==2){
-      g <- create_custom_graph_2(n)
-      V(g)$color <- sample(colorvector, n, replace = TRUE)
-    }else{
-      
-      if (l==3) {g <- create_custom_graph_3(n)
-      V(g)$color <- sample(colorvector, n, replace = TRUE)
-      }else{g <- create_custom_graph_4(n)
-      V(g)$color <- sample(colorvector, n, replace = TRUE)}
-    } }
-  for (i in 1:30) {
-    if (i == 1) {
-      if (length(unique(V(g)$color)) == 1) {
-        return(0) # return 0 in the case where everyone chose the same color through random chance
-      }
-    }
-    if (s=="A") {g <- update_network_colorsA(g, p)}
-    else {g <- update_network_colorsA(g, p)}
-    
-    # Check for convergence
-    if (length(unique(V(g)$color)) == 1) {
-      return(i)  # Return the iteration at which convergence occurred
-    }
-  }
-  return(NA)  # Return NA if no convergence within 30 iterations
-}
-
-
 # Run simulations and collect results
 
-convergence_times <- replicate(num_simulations, perform_simulation(p))
+convergence_times <- replicate(num_simulations, perform_simulation(p,x))
 convergence_df <- data.frame(
   ConvergenceTime = convergence_times,
   Converged = !is.na(convergence_times)
@@ -1257,7 +1120,7 @@ convergence_df <- data.frame(
 C2N2ALp <- nrow(subset(convergence_df, !is.na(ConvergenceTime)))
 
 colorvector<-c("red","blue", "yellow", "brown")
-convergence_times <- replicate(num_simulations, perform_simulation(p))
+convergence_times <- replicate(num_simulations, perform_simulation(p,x))
 convergence_df <- data.frame(
   ConvergenceTime = convergence_times,
   Converged = !is.na(convergence_times)
@@ -1266,7 +1129,7 @@ C4N2ALp <- nrow(subset(convergence_df, !is.na(ConvergenceTime)))
 
 colorvector<-c("red","blue")
 l <- 3
-convergence_times <- replicate(num_simulations, perform_simulation(p))
+convergence_times <- replicate(num_simulations, perform_simulation(p,x))
 convergence_df <- data.frame(
   ConvergenceTime = convergence_times,
   Converged = !is.na(convergence_times)
@@ -1274,7 +1137,7 @@ convergence_df <- data.frame(
 C2N3ALp <- nrow(subset(convergence_df, !is.na(ConvergenceTime)))
 
 colorvector<-c("red","blue", "yellow", "brown")
-convergence_times <- replicate(num_simulations, perform_simulation(p))
+convergence_times <- replicate(num_simulations, perform_simulation(p,x))
 convergence_df <- data.frame(
   ConvergenceTime = convergence_times,
   Converged = !is.na(convergence_times)
@@ -1288,7 +1151,7 @@ x<-vertical_q
 l<-2
 # Run simulations and collect results
 
-convergence_times <- replicate(num_simulations, perform_simulation(p))
+convergence_times <- replicate(num_simulations, perform_simulation(p,x))
 convergence_df <- data.frame(
   ConvergenceTime = convergence_times,
   Converged = !is.na(convergence_times)
@@ -1296,7 +1159,7 @@ convergence_df <- data.frame(
 C2N2ALpq <- nrow(subset(convergence_df, !is.na(ConvergenceTime)))
 
 colorvector<-c("red","blue", "yellow", "brown")
-convergence_times <- replicate(num_simulations, perform_simulation(p))
+convergence_times <- replicate(num_simulations, perform_simulation(p,x))
 convergence_df <- data.frame(
   ConvergenceTime = convergence_times,
   Converged = !is.na(convergence_times)
@@ -1305,7 +1168,7 @@ C4N2ALpq <- nrow(subset(convergence_df, !is.na(ConvergenceTime)))
 
 colorvector<-c("red","blue")
 l <- 3
-convergence_times <- replicate(num_simulations, perform_simulation(p))
+convergence_times <- replicate(num_simulations, perform_simulation(p,x))
 convergence_df <- data.frame(
   ConvergenceTime = convergence_times,
   Converged = !is.na(convergence_times)
@@ -1313,7 +1176,7 @@ convergence_df <- data.frame(
 C2N3ALpq <- nrow(subset(convergence_df, !is.na(ConvergenceTime)))
 
 colorvector<-c("red","blue", "yellow", "brown")
-convergence_times <- replicate(num_simulations, perform_simulation(p))
+convergence_times <- replicate(num_simulations, perform_simulation(p,x))
 convergence_df <- data.frame(
   ConvergenceTime = convergence_times,
   Converged = !is.na(convergence_times)
@@ -1548,7 +1411,7 @@ colorvector<-c("red","blue", "yellow", "brown")
 disabled <- 8 
 
 #C4L2
-convergence_times <- replicate(1000, perform_simulation(p))
+convergence_times <- replicate(1000, perform_simulation(p,x))
 convergence_timesC4N2 <- na.omit(convergence_times) +6 
 
 # Prepare data for plotting
@@ -1567,7 +1430,7 @@ tableC4L2$sum <- sum(subset(tableC4L2, Var1 == "yes")$Freq)
 #Change for C4L3
 l <- 3
 
-convergence_times <- replicate(1000, perform_simulation(p))
+convergence_times <- replicate(1000, perform_simulation(p,x))
 convergence_timesC4N3 <- na.omit(convergence_times) +6 
 # Prepare data for plotting
 convergence_df <- data.frame(
@@ -1586,7 +1449,7 @@ tableC4L3$sum <- sum(subset(tableC4L3, Var1 == "yes")$Freq)
 
 colorvector<-c("red","blue")
 
-convergence_times <- replicate(1000, perform_simulation(p))
+convergence_times <- replicate(1000, perform_simulation(p,x))
 convergence_timesC2N3 <- na.omit(convergence_times) +6 
 # Prepare data for plotting
 convergence_df <- data.frame(
@@ -1604,7 +1467,7 @@ tableC2L3$sum <- sum(subset(tableC2L3, Var1 == "yes")$Freq)
 #Change for C2L2
 l<- 2
 
-convergence_times <- replicate(1000, perform_simulation(p))
+convergence_times <- replicate(1000, perform_simulation(p,x))
 convergence_df <- data.frame(
   Converged = !is.na(convergence_times),
   ConvergenceTime = convergence_times
@@ -1684,7 +1547,7 @@ colorvector<-c("red","blue", "yellow", "brown")
 disabled <- 8 
 
 #C4L2
-convergence_times <- replicate(1000, perform_simulation(p))
+convergence_times <- replicate(1000, perform_simulation(p,x))
 convergence_timesC4N2 <- na.omit(convergence_times) +6 
 
 # Prepare data for plotting
@@ -1701,7 +1564,7 @@ tableC4L2$sum <- sum(subset(tableC4L2, Var1 == "yes")$Freq)
 #Change for C4L3
 l <- 3
 
-convergence_times <- replicate(1000, perform_simulation(p))
+convergence_times <- replicate(1000, perform_simulation(p,x))
 convergence_timesC4N3 <- na.omit(convergence_times) +6 
 # Prepare data for plotting
 convergence_df <- data.frame(
@@ -1720,7 +1583,7 @@ tableC4L3$sum <- sum(subset(tableC4L3, Var1 == "yes")$Freq)
 
 colorvector<-c("red","blue")
 
-convergence_times <- replicate(1000, perform_simulation(p))
+convergence_times <- replicate(1000, perform_simulation(p,x))
 convergence_timesC2N3 <- na.omit(convergence_times) +6 
 # Prepare data for plotting
 convergence_df <- data.frame(
@@ -1738,7 +1601,7 @@ tableC2L3$sum <- sum(subset(tableC2L3, Var1 == "yes")$Freq)
 #Change for C2L2
 l<- 2
 
-convergence_times <- replicate(1000, perform_simulation(p))
+convergence_times <- replicate(1000, perform_simulation(p,x))
 convergence_df <- data.frame(
   Converged = !is.na(convergence_times),
   ConvergenceTime = convergence_times
