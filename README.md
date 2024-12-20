@@ -14,9 +14,7 @@ This repository has been temporarily made public to allow for peer review of the
 - This repository is intended solely for review purposes and cannot be reused or repurposed without explicit written permission from the author.
 
 ### Duration of Public Access
-This repository will remain public until the peer review process is complete. Upon completion, the repository may either:
-- Be made private again, or
-- Be released under an appropriate license following the publication of the associated research.
+This repository will remain permanently public once the paper is accpeted for publication and the software will be released under an appropriate license.
 
 ### Contact Information
 For inquiries or permissions, please contact: [Isabelle Brocas](mailto:brocas@usc.edu)
